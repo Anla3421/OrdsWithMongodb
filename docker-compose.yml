@@ -1,0 +1,52 @@
+version: '3.9'
+services:
+  oracle:
+    image: container-registry.oracle.com/database/free:latest 
+    container_name: oracledb
+    hostname: oracle
+    ports:
+      - 1521:1521
+      - 5500:5500
+    environment:
+      - ORACLE_PWD=inu888
+    volumes:
+      - oradata:/opt/oracle/oradata
+      - ./configs/oracle/scripts/startup:/opt/oracle/scripts/startup
+    networks:
+      - oracleTest
+  ords:
+    image: container-registry.oracle.com/database/ords:24.2.3
+    container_name: ords24
+    hostname: ords
+    ports:
+      - 8080:8080
+      - 27017:27017
+    user: root
+    stdin_open: true
+    tty: true
+    entrypoint: >
+      bash -c "
+      sleep 15 ; chmod -R 777 /etc/ords/config &&
+      cat /etc/ords/config/password.txt |
+      ords install --admin-user sys
+      --db-hostname oracle
+      --db-port 1521
+      --db-servicename FREEPDB1
+      --feature-sdw true --password-stdin &&
+      ords config set mongo.enabled true &&
+      ords serve"
+    depends_on:
+      - oracle
+    volumes:
+      - ords:/etc/ords/config
+      - ./configs/ords:/etc/ords/config
+    networks:
+      - oracleTest
+volumes:
+  oradata:
+    driver: local
+  ords:
+    driver: local
+networks:
+  oracleTest:
+    driver: bridge

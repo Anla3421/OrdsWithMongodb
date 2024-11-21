@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Saved on Mon Oct 21 05:40:42 UTC 2024</comment>
+<entry key="database.api.enabled">true</entry>
+<entry key="mongo.enabled">true</entry>
+</properties>
